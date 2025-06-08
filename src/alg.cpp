@@ -62,7 +62,7 @@ std::vector<char> PMTree::find_by_order(TreeNode* node, int& current_count,
                                        int target_position) {
     if (node->descendants.empty()) {
         ++current_count;
-        return (current_count == target_position) ? 
+        return (current_count == target_position) ?
                std::vector<char>{node->data} : std::vector<char>{};
     }
     for (auto descendant : node->descendants) {
