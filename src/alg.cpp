@@ -4,77 +4,57 @@
 #include <vector>
 #include "tree.h"
 
-TreeNode::TreeNode(char d) : data(d) {}
-
-TreeNode::~TreeNode() {
-    for (auto descendant : descendants)
-        delete descendant;
-}
-
-PMTree::PMTree(const std::vector<char>& input_chars) {
-    root_node = new TreeNode(' ');
-    construct_tree(root_node, input_chars);
-}
-
-PMTree::~PMTree() {
-    delete root_node;
-}
-
-void PMTree::construct_tree(TreeNode* node, std::vector<char> remainder) {
-    std::sort(remainder.begin(), remainder.end());
-    for (char ch : remainder) {
-        TreeNode* child = new TreeNode(ch);
-        node->descendants.push_back(child);
-        std::vector<char> next(remainder);
-        next.erase(std::remove(next.begin(), next.end(), ch), next.end());
-        construct_tree(child, next);
+void PMTree::grow(TreeNode* node, const std::vector<char>& elements) {
+    std::sort(elements.begin(), elements.end());
+    for (unsigned i = 0; i < elements.size(); ++i) {
+        char current_element = elements[i];
+        std::vector<char> next_elements(elements.begin(), elements.end());
+        next_elements.erase(std::remove(next_elements.begin(), next_elements.end(), current_element), next_elements.end());
+        node->branches[i].element = current_element;
+        node->branchCount--;
+        grow(&node->branches[i], next_elements);
     }
 }
 
-void PMTree::search_paths(TreeNode* node, std::vector<char>& current_path, std::vector<std::vector<char>>& paths) {
-    if (node->data != ' ')
-        current_path.push_back(node->data);
-    if (node->descendants.empty()) {
-        paths.push_back(current_path);
-    } else {
-        for (auto descendant : node->descendants)
-            search_paths(descendant, current_path, paths);
+bool PMTree::generate_path(TreeNode* node, std::vector<char>& path_buffer, std::vector<std::vector<char>>& result) {
+    if (node->branchCount == 0) {
+        path_buffer.push_back(node->element);
+        result.emplace_back(path_buffer);
+        path_buffer.pop_back();
+        return true;
     }
-    if (!current_path.empty() && node->data != ' ')
-        current_path.pop_back();
-}
-
-std::vector<std::vector<char>> getAllPerms(PMTree& tree) {
-    std::vector<std::vector<char>> all_permutations;
-    std::vector<char> path;
-    tree.search_paths(tree.root_node, path, all_permutations);
-    return all_permutations;
-}
-
-std::vector<char> getPerm1(PMTree& tree, int position) {
-    auto full_permutations = getAllPerms(tree);
-    return(position > 0 && position <= full_permutations.size()) ?
-           full_permutations[position - 1] :
-           std::vector<char>();
-}
-
-std::vector<char> PMTree::find_by_order(TreeNode* node, int& current_count, int target_position) {
-    if (node->descendants.empty()) {
-        ++current_count;
-        return(current_count == target_position) ? std::vector<char>{node->data} : std::vector<char>{};
+    path_buffer.push_back(node->element);
+    for (unsigned i = 0; i < node->branchCount; ++i) {
+        generate_path(&node->branches[i], path_buffer, result);
     }
-    for (auto descendant : node->descendants) {
-        auto found_perm = find_by_order(descendant, current_count, target_position);
-        if (!found_perm.empty()) {
-            if (node->data != ' ')
-                found_perm.insert(found_perm.begin(), node->data);
-            return found_perm;
-        }
-    }
-    return {};
+    path_buffer.pop_back();
+    return false;
 }
 
-std::vector<char> getPerm2(PMTree& tree, int position) {
-    int current_count = 0;
-    return tree.find_by_order(tree.root_node, current_count, position);
+std::vector<char> PMTree::locate_permutation(TreeNode* node, int pos) {
+    std::vector<char> buffer;
+    buffer.reserve(pos + 1);
+    while (pos--) {
+        buffer.push_back(node->element);
+        node = &node->branches[pos % node->branchCount];
+    }
+    buffer.push_back(node->element);
+    return buffer;
+}
+
+PMTree::PMTree(const std::vector<char>& input_data) {
+    root = std::make_unique<TreeNode>(' ', input_data.size());
+    grow(root.get(), input_data);
+}
+
+std::vector<std::vector<char>> PMTree::extract_all_permutations() {
+    std::vector<std::vector<char>> result;
+    std::vector<char> path_buffer;
+    generate_path(root.get(), path_buffer, result);
+    return result;
+}
+
+std::vector<char> PMTree::obtain_permutation_at(int number) {
+    if (number <= 0 || number > factorials(input_data.size())) return {};
+    return locate_permutation(root.get(), number - 1);
 }
