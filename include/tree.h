@@ -3,32 +3,31 @@
 #define INCLUDE_TREE_H_
 
 #include <vector>
-#include <memory>
 
-struct TreeNode {
-    char element;
-    std::unique_ptr<TreeNode[]> branches;
-    unsigned branchCount;
+class TreeNode {
+ public:
+    char data;
+    std::vector<TreeNode*> descendants;
 
-    TreeNode(char e, unsigned bc) : element(e), branchCount(bc) {
-        branches.reset(new TreeNode[bc]);
-    };
+    explicit TreeNode(char d);
+    ~TreeNode();  
 };
 
 class PMTree {
-private:
-    std::unique_ptr<TreeNode> root;
+ private:
+    TreeNode* root_node;
 
-    void grow(TreeNode* node, const std::vector<char>& elements);
-    bool generate_path(TreeNode* node, std::vector<char>& buffer, std::vector<std::vector<char>>& result);
-    std::vector<char> locate_permutation(TreeNode* node, int pos);
+    void construct_tree(TreeNode* node, std::vector<char> remaining);
+    void search_paths(TreeNode* node, std::vector<char>& path, std::vector<std::vector<char>>& result);
+    std::vector<char> find_by_order(TreeNode* node, int& count, int target_idx);
 
-public:
-    PMTree(const std::vector<char>& input_data);
-    ~PMTree() = default;
+ public:
+    explicit PMTree(const std::vector<char>& input_chars);
+    ~PMTree();
 
-    std::vector<std::vector<char>> extract_all_permutations();
-    std::vector<char> obtain_permutation_at(int number);
+    friend std::vector<std::vector<char>> getAllPerms(PMTree&);
+    friend std::vector<char> getPerm1(PMTree&, int);
+    friend std::vector<char> getPerm2(PMTree&, int);
 };
 
 #endif  // INCLUDE_TREE_H_
