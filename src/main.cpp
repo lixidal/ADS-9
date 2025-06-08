@@ -6,25 +6,31 @@
 #include "tree.h"
 
 int main() {
-    std::vector<char> test_input = {'a', 'b', 'c', 'd'};
-    PMTree tree(test_input);
+    std::vector<char> chars = {'a', 'b', 'c', 'd'};
+    PMTree tree(chars);
 
     auto start_time = std::chrono::high_resolution_clock::now();
-    auto all_permutations = tree.extract_all_permutations();
-    auto stop_time = std::chrono::high_resolution_clock::now();
-    double elapsed_time = std::chrono::duration<double, std::milli>(stop_time - start_time).count();
-    std::cout << "Все перестановки извлечены за: " << elapsed_time << " миллисекунд\n";
+    auto all_permutations = getAllPerms(tree);
+    auto finish_time = std::chrono::high_resolution_clock::now();
+    double elapsed_ms = std::chrono::duration<double, std::milli>(finish_time - start_time).count();
+    std::cout << "Время генерации всех перестановок: " << elapsed_ms << " мс.\n";
 
-    std::random_device device;
-    std::mt19937 engine(device());
-    std::uniform_int_distribution<int> distribution(1, static_cast<int>(all_permutations.size()));
-    int random_position = distribution(engine);
+    std::random_device random_device;
+    std::mt19937 generator(random_device());
+    std::uniform_int_distribution<> distribution(1, static_cast<int>(all_permutations.size()));
+    int selected_number = distribution(generator);
 
     start_time = std::chrono::high_resolution_clock::now();
-    auto specific_permutation = tree.obtain_permutation_at(random_position);
-    stop_time = std::chrono::high_resolution_clock::now();
-    elapsed_time = std::chrono::duration<double, std::milli>(stop_time - start_time).count();
-    std::cout << "Перестановка по указанному индексу извлечена за: " << elapsed_time << " миллисекунд\n";
+    auto permutation_from_list = getPerm1(tree, selected_number);
+    finish_time = std::chrono::high_resolution_clock::now();
+    elapsed_ms = std::chrono::duration<double, std::milli>(finish_time - start_time).count();
+    std::cout << "Получение перестановки через общий список заняла: " << elapsed_ms << " мс.\n";
+
+    start_time = std::chrono::high_resolution_clock::now();
+    auto direct_access = getPerm2(tree, selected_number);
+    finish_time = std::chrono::high_resolution_clock::now();
+    elapsed_ms = std::chrono::duration<double, std::milli>(finish_time - start_time).count();
+    std::cout << "Прямой доступ к перестановке занял: " << elapsed_ms << " мс.\n";
 
     return 0;
 }
