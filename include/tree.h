@@ -10,7 +10,7 @@ class TreeNode {
     std::vector<TreeNode*> descendants;
 
     explicit TreeNode(char d);
-    ~TreeNode();  
+    ~TreeNode();
 };
 
 class PMTree {
@@ -18,8 +18,10 @@ class PMTree {
     TreeNode* root_node;
 
     void construct_tree(TreeNode* node, std::vector<char> remaining);
-    void search_paths(TreeNode* node, std::vector<char>& path, std::vector<std::vector<char>>& result);
-    std::vector<char> find_by_order(TreeNode* node, int& count, int target_idx);
+    void search_paths(TreeNode* node, std::vector<char>& path,
+                     std::vector<std::vector<char>>& result);
+    std::vector<char> find_by_order(TreeNode* node, int& count,
+                                  int target_idx);
 
  public:
     explicit PMTree(const std::vector<char>& input_chars);
