@@ -31,7 +31,8 @@ void PMTree::construct_tree(TreeNode* node, std::vector<char> remainder) {
     }
 }
 
-void PMTree::search_paths(TreeNode* node, std::vector<char>& current_path, std::vector<std::vector<char>>& paths) {
+void PMTree::search_paths(TreeNode* node, std::vector<char>& current_path,
+                         std::vector<std::vector<char>>& paths) {
     if (node->data != ' ')
         current_path.push_back(node->data);
     if (node->descendants.empty()) {
@@ -53,18 +54,20 @@ std::vector<std::vector<char>> getAllPerms(PMTree& tree) {
 
 std::vector<char> getPerm1(PMTree& tree, int position) {
     auto full_permutations = getAllPerms(tree);
-    return(position > 0 && position <= full_permutations.size()) ?
-           full_permutations[position - 1] :
-           std::vector<char>();
+    return (position > 0 && position <= full_permutations.size()) ?
+           full_permutations[position - 1] : std::vector<char>();
 }
 
-std::vector<char> PMTree::find_by_order(TreeNode* node, int& current_count, int target_position) {
+std::vector<char> PMTree::find_by_order(TreeNode* node, int& current_count,
+                                       int target_position) {
     if (node->descendants.empty()) {
         ++current_count;
-        return(current_count == target_position) ? std::vector<char>{node->data} : std::vector<char>{};
+        return (current_count == target_position) ? 
+               std::vector<char>{node->data} : std::vector<char>{};
     }
     for (auto descendant : node->descendants) {
-        auto found_perm = find_by_order(descendant, current_count, target_position);
+        auto found_perm = find_by_order(descendant, current_count,
+                                       target_position);
         if (!found_perm.empty()) {
             if (node->data != ' ')
                 found_perm.insert(found_perm.begin(), node->data);
