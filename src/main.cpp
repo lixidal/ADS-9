@@ -14,7 +14,7 @@ int main() {
     auto finish_time = std::chrono::high_resolution_clock::now();
     double elapsed_ms = std::chrono::duration<double, std::milli>(
         finish_time - start_time).count();
-    std::cout << "Время генерации всех перестановок: " 
+    std::cout << "Время генерации всех перестановок: "
               << elapsed_ms << " мс.\n";
 
     std::random_device random_device;
@@ -28,7 +28,7 @@ int main() {
     finish_time = std::chrono::high_resolution_clock::now();
     elapsed_ms = std::chrono::duration<double, std::milli>(
         finish_time - start_time).count();
-    std::cout << "Получение перестановки через общий список заняла: " 
+    std::cout << "Получение перестановки через общий список заняла: "
               << elapsed_ms << " мс.\n";
 
     start_time = std::chrono::high_resolution_clock::now();
@@ -36,7 +36,7 @@ int main() {
     finish_time = std::chrono::high_resolution_clock::now();
     elapsed_ms = std::chrono::duration<double, std::milli>(
         finish_time - start_time).count();
-    std::cout << "Прямой доступ к перестановке занял: " 
+    std::cout << "Прямой доступ к перестановке занял: "
               << elapsed_ms << " мс.\n";
 
     return 0;
