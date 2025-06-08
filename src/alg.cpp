@@ -10,12 +10,10 @@ TreeNode::~TreeNode() {
     for (auto descendant : descendants)
         delete descendant;
 }
-
 PMTree::PMTree(const std::vector<char>& input_chars) {
     root_node = new TreeNode(' ');
     construct_tree(root_node, input_chars);
 }
-
 PMTree::~PMTree() {
     delete root_node;
 }
@@ -30,7 +28,6 @@ void PMTree::construct_tree(TreeNode* node, std::vector<char> remainder) {
         construct_tree(child, next);
     }
 }
-
 void PMTree::search_paths(TreeNode* node, std::vector<char>& current_path,
                          std::vector<std::vector<char>>& paths) {
     if (node->data != ' ')
@@ -51,13 +48,11 @@ std::vector<std::vector<char>> getAllPerms(PMTree& tree) {
     tree.search_paths(tree.root_node, path, all_permutations);
     return all_permutations;
 }
-
 std::vector<char> getPerm1(PMTree& tree, int position) {
     auto full_permutations = getAllPerms(tree);
     return (position > 0 && position <= full_permutations.size()) ?
            full_permutations[position - 1] : std::vector<char>();
 }
-
 std::vector<char> PMTree::find_by_order(TreeNode* node, int& current_count,
                                        int target_position) {
     if (node->descendants.empty()) {
@@ -76,7 +71,6 @@ std::vector<char> PMTree::find_by_order(TreeNode* node, int& current_count,
     }
     return {};
 }
-
 std::vector<char> getPerm2(PMTree& tree, int position) {
     int current_count = 0;
     return tree.find_by_order(tree.root_node, current_count, position);
